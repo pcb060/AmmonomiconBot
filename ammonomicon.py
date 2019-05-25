@@ -1,7 +1,7 @@
 # https://github.com/yashar1/reddit-comment-bot
 import praw
 import html2markdown as h2m
-import wiki_get
+import wiki_page_parser
 import time
 import os
 import re
@@ -27,12 +27,12 @@ def run_bot(reddit, comments_replied_to):
                 res = ""
                 for i in reqs:
                     print('Request for "' + i.strip() + '" received')
-                    res += wiki_get.get_wiki_entry(i)
+                    res += wiki_page_parser.get_entry(i)
                     if i != reqs[len(reqs) - 1]:
                         res += "\n------\n"
             else:
                 print('Request for "' + reqs.strip() + '" received')
-                res = wiki_get.get_wiki_entry(reqs)
+                res = wiki_page_parser.get_entry(reqs)
 
             res_md = h2m.convert(res)
             comment.reply(res_md)
@@ -52,10 +52,7 @@ def run_bot(reddit, comments_replied_to):
     time.sleep(10)
 
 
-# def reply_and_update(req):
-
-
-# cerco se esiste nel commento una frase tra due parentesi graffe
+# looks for a request inside braces in comment
 def is_request(text):
     return bool(re.search("[\{][a-zA-Z0-9 '\-\+\.]*[\}]", text))
 
