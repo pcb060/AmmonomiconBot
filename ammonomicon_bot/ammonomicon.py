@@ -1,7 +1,7 @@
 # https://github.com/yashar1/reddit-comment-bot
 import praw
 import html2markdown as h2m
-import wiki_page_parser
+import ammonomicon_bot.wiki_parser as wp
 import time
 import os
 import re
@@ -27,12 +27,12 @@ def run_bot(reddit, comments_replied_to):
                 res = ""
                 for i in reqs:
                     print('Request for "' + i.strip() + '" received')
-                    res += wiki_page_parser.get_entry(i)
+                    res += wp.get_entry(i)
                     if i != reqs[len(reqs) - 1]:
                         res += "\n------\n"
             else:
                 print('Request for "' + reqs.strip() + '" received')
-                res = wiki_page_parser.get_entry(reqs)
+                res = wp.get_entry(reqs)
 
             res_md = h2m.convert(res)
             comment.reply(res_md)
