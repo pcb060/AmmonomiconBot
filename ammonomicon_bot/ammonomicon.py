@@ -1,7 +1,7 @@
 # https://github.com/yashar1/reddit-comment-bot
 import praw
-import html2markdown as h2m
 import ammonomicon_bot.wiki_parser as wp
+from ammonomicon_bot.utils import format_to_comment
 import time
 import os
 import re
@@ -24,18 +24,17 @@ def run_bot(reddit, comments_replied_to):
             reqs = re.findall("\{(.*?)\}", comment.body)
 
             if isinstance(reqs, list):
-                res = ""
+                res = None
                 for i in reqs:
                     print('Request for "' + i.strip() + '" received')
                     res += wp.get_entry(i)
                     if i != reqs[len(reqs) - 1]:
-                        res += "\n------\n"
+                        res += "\n___\n"
             else:
                 print('Request for "' + reqs.strip() + '" received')
                 res = wp.get_entry(reqs)
 
-            res_md = h2m.convert(res)
-            comment.reply(res_md)
+            comment.reply(format_to_comment(res))
             print("Replied to comment " + comment.id)
 
             comments_replied_to.append(comment.id)
