@@ -1,1 +1,1 @@
-worker: python ammonomicon.py
+worker: python ammonomicon_bot/ammonomicon.py
