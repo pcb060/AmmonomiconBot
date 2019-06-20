@@ -1,6 +1,6 @@
 from tinydb import TinyDB, Query
 from fuzzywuzzy import fuzz
-from ammonomicon_bot.utils import check_if_infinite, check_if_multiple_qualities
+from utils import check_if_infinite, check_if_multiple_qualities
 
 db = TinyDB("ammonomicon_bot/dbs/db.json")
 
@@ -95,13 +95,15 @@ def get_entry(name):
     Entry = Query()
     res = db.all()
 
-    max = None
-    most_likely = None
+    max = 0
+    ind = 0
     for match in res:
-        f = fuzz.ratio(res[match]["Name"], name)
+        f = fuzz.ratio(res[ind]["Name"], name)
         if f > max:
             max = f
-            most_likely = res[match]
+            most_likely = res[ind]
+        ind += 1
 
+    print('Most likely: "' + most_likely["Name"] + '", fuzz value = ' + str(max))
     return most_likely
 
