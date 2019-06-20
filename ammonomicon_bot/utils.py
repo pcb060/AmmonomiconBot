@@ -1,17 +1,22 @@
-import urllib.parse
-from ammonomicon_bot.conf.endpoints import *
-import ammonomicon_bot.md_formatter as md
+from conf.endpoints import ETG_WIKI_ENDPOINT
+from conf.help_urls import *
+import md_formatter as md
 
 
 def row_to_list_of_cells(parsed_row):
+    """Returns list of cells composing row
+    """
     tmp = list()
     for cell in parsed_row:
+        # ignores empty cells
         if str(cell) != "\n":
             tmp.append(cell)
     return tmp
 
 
 def check_if_infinite(parsed_cell):
+    """Returns "∞" if cell contains Infinity png, else parses value as usual
+    """
     if parsed_cell.find_all("img") and parsed_cell.find("img")["alt"] == "Infinity.png":
         return "∞"
     else:
@@ -19,6 +24,8 @@ def check_if_infinite(parsed_cell):
 
 
 def check_if_multiple_qualities(parsed_cell):
+    """Checks if cell contains multiple Quality Item png's. Returns string with found qualities.
+    """
     qlt = ""
     counter = 0
     if len(parsed_cell.find_all("img")) > 1:
@@ -33,53 +40,111 @@ def check_if_multiple_qualities(parsed_cell):
 
 
 def format_to_comment(entry):
-    comm = None
+    """Checks entry category and returns string with info formatted accordingly (using markdown syntax)
+    """
+    comm = ""
+
     if entry["Category"] == "Enemy":
-        # 1st block
-        comm += entry["Name"] + md.superscript(
-            md.bold(md.link("sprite", entry["Icon"]))
-        )
-        comm += " - " + md.italic(entry["Quote"]) + "\n"
-        # 2nd block
-        comm += md.quote(entry["Notes"]) + "\n"
-        # 3rd block
-        comm += (
-            "Quality: "
-            + md.bold(entry["Quality"])
-            + " | Type: "
-            + md.bold(entry["Type"])
-            + "\n"
-        )
-        # 4th block
-        elements = [
-            md.bold("Magazine Size: ") + entry["Magazine Size"],
-            md.bold("Ammo Capacity: ") + entry["Ammo Capacity"],
-            md.bold("Damage: ") + entry["Damage"],
-            md.bold("Fire Rate: ") + entry["Fire Rate"],
-            md.bold("Reload Time: ") + entry["Reload Time"],
-            md.bold("Shot Speed: ") + entry["Shot Speed"],
-            md.bold("Range: ") + entry["Range"],
-            md.bold("Force: ") + entry["Force"],
-            md.bold("Spread: ") + entry["Spread"],
-        ]
-        comm += md.unordered_list(elements) + "\n"
-        # 5th block
+        # 1st block: Name
+        comm += md.bold(md.link(entry["Name"], entry["Icon"])) + "\n"
+        # 2nd block: Notes
+        comm += md.quote(entry["Description"]) + "\n"
+        # 3rd block: Quality and Type (Base Health)
+        comm += md.bold("Base Health:") + " " + entry["Base Health"] + "\n\n"
+        # 4th block: Link to wiki
         comm += (
             "For more information, see the "
             + md.link(
                 "official entry in the wiki.",
-                ETG_WIKI_ENDPOINT + urllib.parse.quote(entry["Name"]),
+                ETG_WIKI_ENDPOINT + entry["Name"].replace(" ", "_"),
             )
             + "\n"
         )
-        # 6th block
-        comm += md.hr()
-        comm += md.superscript("FAQ | Mistake? | Github | Support me")
 
     elif entry["Category"] == "Gun":
-        pass
+        # 1st block: Name and Quote
+        comm += md.bold(md.link(entry["Name"], entry["Icon"]))
+        comm += " - " + md.italic(entry["Quote"]) + "\n"
+        # 2nd block: Notes
+        comm += md.quote(entry["Notes"]) + "\n"
+        # 3rd block: Quality and Type
+        comm += (
+            md.bold("Quality:")
+            + " "
+            + entry["Quality"]
+            + " | "
+            + md.bold("Type:")
+            + " "
+            + entry["Type"]
+            + "\n"
+        )
+        # 4th block: Characteristics
+        elements = [
+            md.bold("Magazine Size:") + " " + entry["Magazine Size"],
+            md.bold("Ammo Capacity:") + " " + entry["Ammo Capacity"],
+            md.bold("Damage:") + " " + entry["Damage"],
+            md.bold("Fire Rate:") + " " + entry["Fire Rate"],
+            md.bold("Reload Time:") + " " + entry["Reload Time"],
+            md.bold("Shot Speed:") + " " + entry["Shot Speed"],
+            md.bold("Range:") + " " + entry["Range"],
+            md.bold("Force:") + " " + entry["Force"],
+            md.bold("Spread:") + " " + entry["Spread"],
+        ]
+        comm += md.unordered_list(elements) + "\n"
+        # 5th block: link to wiki
+        comm += (
+            "For more information, see the "
+            + md.link(
+                "official entry in the wiki.",
+                ETG_WIKI_ENDPOINT + entry["Name"].replace(" ", "_"),
+            )
+            + "\n"
+        )
 
     elif entry["Category"] == "Item":
-        pass
+        # 1st block: Name and Quote
+        comm += md.bold(md.link(entry["Name"], entry["Icon"]))
+        comm += " - " + md.italic(entry["Quote"]) + "\n"
+        # 2nd block: Notes
+        comm += md.quote(entry["Effect"]) + "\n"
+        # 3rd block: Quality and Type
+        comm += (
+            md.bold("Quality:")
+            + " "
+            + entry["Quality"]
+            + " | "
+            + md.bold("Type:")
+            + " "
+            + entry["Type"]
+            + "\n\n"
+        )
+        # 4th block: Link to wiki
+        comm += (
+            "For more information, see the "
+            + md.link(
+                "official entry in the wiki.",
+                ETG_WIKI_ENDPOINT + entry["Name"].replace(" ", "_"),
+            )
+            + "\n"
+        )
 
-    return ""
+    return comm
+
+
+def comment_help():
+    return (
+        md.hr()
+        + "\n"
+        + md.hr()
+        + "\n"
+        + md.superscript(
+            md.link("FAQ", FAQ_URL)
+            + " | "
+            + md.link("Mistake?", MISTAKE_URL)
+            + " | "
+            + md.link("Github", GITHUB_URL)
+            + " | "
+            + md.link("Support me", SUPPORT_ME_URL)
+        )
+    )
+
