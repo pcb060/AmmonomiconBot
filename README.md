@@ -8,6 +8,6 @@ The bot will look for wiki entries in all comments posted in [r/EnterTheGungeon]
 
 E.g:
 
-![A simple request](https://i.imgur.com/XNB7AJh.png)
+![A simple request](https://i.imgur.com/5eOqrfC.png)
 
-![Multiple requests in a single comment](https://i.imgur.com/YhkZdyA.png)
+![Multiple requests in a single comment](https://i.imgur.com/PK8bdiI.png)
