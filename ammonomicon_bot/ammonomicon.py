@@ -14,7 +14,13 @@ def bot_login():
     """Logs the bot into reddit through praw
     """
     print("Logging in...")
-    reddit = praw.Reddit("Ammonomicon")
+    reddit = praw.Reddit(
+        client_id=os.environ["client_id"],
+        client_secret=os.environ["client_secret"],
+        password=os.environ["client_password"],
+        user_agent=os.environ["user_agent"],
+        username=os.environ["username"],
+    )
     print("Logged in!")
 
     return reddit

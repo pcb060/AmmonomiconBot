@@ -4,3 +4,4 @@ __pycache__
 ammonomicon_bot/data/comments_replied_to.txt
 ammonomicon_bot/data/last_update.txt
 ammonomicon_bot/dbs/db.json
+.env
