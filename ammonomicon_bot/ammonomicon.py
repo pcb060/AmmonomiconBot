@@ -17,7 +17,7 @@ def bot_login():
     reddit = praw.Reddit(
         client_id=os.environ["client_id"],
         client_secret=os.environ["client_secret"],
-        password=os.environ["client_password"],
+        password=os.environ["password"],
         user_agent=os.environ["user_agent"],
         username=os.environ["username"],
     )
