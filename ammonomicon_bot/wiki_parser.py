@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
-from ammonomicon_bot.conf.endpoints import *
-import ammonomicon_bot.db_manager as dbm
-from ammonomicon_bot.utils import row_to_list_of_cells
+from conf.endpoints import ENEMIES_ENDPOINT, GUNS_ENDPOINT, ITEMS_ENDPOINT
+import db_manager as dbm
+from utils import row_to_list_of_cells
 
 
 def parse_enemies():
