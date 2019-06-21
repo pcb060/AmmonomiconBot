@@ -33,7 +33,7 @@ def search_and_reply(reddit, comments_replied_to, seconds_of_sleep):
 
     for comment in reddit.subreddit("testingground4bots").comments(limit=1000):
         # if is_request(comment.body) and comment.id not in comments_replied_to:
-        if is_request(comment.body) and not has_been_replied_to(comment.id):
+        if is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
 
             if isinstance(reqs, list):
@@ -82,10 +82,11 @@ def is_request(text):
 def has_been_replied_to(request_id):
     """Returns True if the comment with id request_id has already received a reply by the bot, False otherwise
     """
-    request = praw.Reddit.comment(request_id).refresh()
+    request = reddit.comment(request_id)
+    request.refresh()
     replies = request.replies.list()
     for r in replies:
-        if r.author == "AmmonomiconBot" and r.parent() == request_id:
+        if r.author == "AmmonomiconBot" and str(r.parent()) == str(request_id):
             return True
     return False
 
