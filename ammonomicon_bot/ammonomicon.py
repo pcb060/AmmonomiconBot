@@ -85,15 +85,11 @@ def has_been_replied_to(request_id):
     return False
 
 
-last_update = datetime.datetime(1900, 1, 1)
-
-
-def update_db():
+def update_db(last_update):
     """Updates entry database
     """
-    global last_update
     try:
-        print("Updating the database... (last update: " + last_update + ")")
+        print("Updating the database... (last update: " + str(last_update) + ")")
         wp.parse_enemies()
         wp.parse_guns()
         wp.parse_items()
@@ -106,10 +102,11 @@ def update_db():
 
 
 reddit = bot_login()
-update_db()
+last_update = datetime.datetime(1900, 1, 1)
+update_db(last_update)
 
 while True:
     search_and_reply(reddit, 10)
     # updates entry database if a week has passed since last update
     if (datetime.datetime.now() - last_update).days >= 7:
-        update_db()
+        update_db(last_update)
