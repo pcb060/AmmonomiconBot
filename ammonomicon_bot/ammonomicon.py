@@ -26,13 +26,12 @@ def bot_login():
     return reddit
 
 
-def search_and_reply(reddit, comments_replied_to, seconds_of_sleep):
+def search_and_reply(reddit, seconds_of_sleep):
     """Searches last 1000 comments in subreddit for requests, replies, then sleeps for seconds_of_sleep seconds
     """
     print("Searching last 1,000 comments...")
 
     for comment in reddit.subreddit("testingground4bots").comments(limit=1000):
-        # if is_request(comment.body) and comment.id not in comments_replied_to:
         if is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
 
@@ -63,11 +62,6 @@ def search_and_reply(reddit, comments_replied_to, seconds_of_sleep):
             comment.reply(res)
             print("Replied to comment " + comment.id)
 
-            comments_replied_to.append(comment.id)
-
-            with open(PATH_TO_COMMENT_IDS, "a") as f:
-                f.write(comment.id + "\n")
-
     print("Search Completed.")
     print("Sleeping for " + str(seconds_of_sleep) + " seconds...")
     time.sleep(seconds_of_sleep)
@@ -91,29 +85,13 @@ def has_been_replied_to(request_id):
     return False
 
 
-def get_saved_comments():
-    """Gets comment IDs inside comments_replied_to.txt
-    """
-    # if file doesn't exist yet, comments_replied_to is set to an empty list
-    if not os.path.isfile(PATH_TO_COMMENT_IDS):
-        comments_replied_to = []
-    else:
-        with open(PATH_TO_COMMENT_IDS, "r") as f:
-            comments_replied_to = f.read()
-            comments_replied_to = comments_replied_to.split("\n")
-            comments_replied_to = list(filter(None, comments_replied_to))
-
-    return comments_replied_to
-
-
 def get_last_update():
-    with open(PATH_TO_UPDATE_DATE, "r") as f:
-        return f.read()
+    return last_update
 
 
 def set_last_update():
-    with open(PATH_TO_UPDATE_DATE, "w") as f:
-        f.write(str(datetime.datetime.now()))
+    global last_update
+    last_update = datetime.datetime.now()
 
 
 def update_db():
@@ -133,14 +111,11 @@ def update_db():
 
 
 reddit = bot_login()
-comments_replied_to = get_saved_comments()
+last_update = None
 update_db()
 
 while True:
-    search_and_reply(reddit, comments_replied_to, 10)
+    search_and_reply(reddit, 10)
     # updates entry database if a week has passed since last update
-    if (
-        datetime.datetime.now()
-        - datetime.datetime.strptime(get_last_update(), "%Y-%m-%d %H:%M:%S.%f")
-    ).days >= 7:
+    if (datetime.datetime.now() - get_last_update()).days >= 7:
         update_db()
