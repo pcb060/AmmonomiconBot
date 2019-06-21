@@ -92,7 +92,6 @@ def upsert_item(parsed_entry):
 def get_entry(name):
     """Uses fuzzy search inside database for entries matching name and returns most likely candidate
     """
-    Entry = Query()
     res = db.all()
 
     max = 0
