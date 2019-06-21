@@ -3,7 +3,6 @@ import praw
 import wiki_parser as wp
 import db_manager as dbm
 from utils import format_to_comment, comment_help
-from conf.txt_files import PATH_TO_COMMENT_IDS, PATH_TO_UPDATE_DATE
 import time
 import os
 import re
