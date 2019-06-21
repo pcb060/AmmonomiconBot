@@ -85,15 +85,16 @@ def has_been_replied_to(request_id):
     return False
 
 
-def update_db(last_update):
+def update_db(update_time):
     """Updates entry database
     """
     try:
-        print("Updating the database... (last update: " + str(last_update) + ")")
+        print("Updating the database... (last update: " + str(update_time) + ")")
         wp.parse_enemies()
         wp.parse_guns()
         wp.parse_items()
         print("Update completed!")
+        global last_update
         last_update = datetime.datetime.now()
     except:
         print(
