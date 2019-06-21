@@ -82,7 +82,8 @@ def is_request(text):
 def has_been_replied_to(request_id):
     """Returns True if the comment with id request_id has already received a reply by the bot, False otherwise
     """
-    request = praw.Reddit.comment(request_id).refresh()
+    request = praw.Reddit.comment(request_id)
+    request.refresh()
     replies = request.replies.list()
     for r in replies:
         if r.author == "AmmonomiconBot" and r.parent() == request_id:
