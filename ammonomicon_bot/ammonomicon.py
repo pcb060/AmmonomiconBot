@@ -32,9 +32,9 @@ def search_and_reply(reddit, comments_replied_to, seconds_of_sleep):
     print("Searching last 1,000 comments...")
 
     for comment in reddit.subreddit("testingground4bots").comments(limit=1000):
-        # and comment.author != reddit.user.me()
-        if is_request(comment.body) and comment.id not in comments_replied_to:
-            reqs = re.findall("\{(.*?)\}", comment.body)
+        # if is_request(comment.body) and comment.id not in comments_replied_to:
+        if is_request(comment.body) and not has_been_replied_to(comment.id):
+            reqs = re.findall(r"{(.*?)}", comment.body)
 
             if isinstance(reqs, list):
                 tmp = list()
@@ -76,7 +76,18 @@ def search_and_reply(reddit, comments_replied_to, seconds_of_sleep):
 def is_request(text):
     """Checks if text contains a valid request (entry inside braces '{ }')
     """
-    return bool(re.search("[\{][a-zA-Z0-9 '\-\+\.]*[\}]", text))
+    return bool(re.search(r"[{][a-zA-Z0-9 '-+.]*[}]", text))
+
+
+def has_been_replied_to(request_id):
+    """Returns True if the comment with id request_id has already received a reply by the bot, False otherwise
+    """
+    request = praw.Reddit.comment(request_id).refresh()
+    replies = request.replies.list()
+    for r in replies:
+        if r.author == "AmmonomiconBot" and r.parent() == request_id:
+            return True
+    return False
 
 
 def get_saved_comments():
