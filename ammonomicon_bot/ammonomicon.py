@@ -85,25 +85,20 @@ def has_been_replied_to(request_id):
     return False
 
 
-def get_last_update():
-    return last_update
-
-
-def set_last_update():
-    global last_update
-    last_update = datetime.datetime.now()
+last_update = datetime.datetime(1900, 1, 1)
 
 
 def update_db():
     """Updates entry database
     """
+    global last_update
     try:
-        print("Updating the database... (last update: " + get_last_update() + ")")
+        print("Updating the database... (last update: " + last_update + ")")
         wp.parse_enemies()
         wp.parse_guns()
         wp.parse_items()
         print("Update completed!")
-        set_last_update()
+        last_update = datetime.datetime.now()
     except:
         print(
             "Something went wrong while trying to update the database. Update will be skipped."
@@ -111,11 +106,10 @@ def update_db():
 
 
 reddit = bot_login()
-last_update = None
 update_db()
 
 while True:
     search_and_reply(reddit, 10)
     # updates entry database if a week has passed since last update
-    if (datetime.datetime.now() - get_last_update()).days >= 7:
+    if (datetime.datetime.now() - last_update).days >= 7:
         update_db()
