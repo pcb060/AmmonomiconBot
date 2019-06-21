@@ -110,3 +110,5 @@ while True:
     # updates entry database if a week has passed since last update
     if (datetime.datetime.now() - last_update).days >= 7:
         update_db(last_update)
+    else:
+        print("Skipping update. (last update: " + str(last_update))
