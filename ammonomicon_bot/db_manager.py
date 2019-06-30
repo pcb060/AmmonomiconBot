@@ -103,6 +103,8 @@ def get_entry(name):
             most_likely = res[ind]
         ind += 1
 
-    print('Most likely: "' + most_likely["Name"] + '", fuzz value = ' + str(max))
+    print(
+        'SEARCH: Most likely: "' + most_likely["Name"] + '", fuzz value = ' + str(max)
+    )
     return most_likely
 

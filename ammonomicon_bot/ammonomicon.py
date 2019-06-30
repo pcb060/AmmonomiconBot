@@ -12,7 +12,7 @@ import datetime
 def bot_login():
     """Logs the bot into reddit through praw
     """
-    print("Logging in...")
+    print("SYSTEM: Logging in...")
     reddit = praw.Reddit(
         client_id=os.environ["client_id"],
         client_secret=os.environ["client_secret"],
@@ -20,7 +20,7 @@ def bot_login():
         user_agent=os.environ["user_agent"],
         username=os.environ["username"],
     )
-    print("Logged in!")
+    print("SYSTEM: Logged in!")
 
     return reddit
 
@@ -28,7 +28,7 @@ def bot_login():
 def search_and_reply(reddit, seconds_of_sleep):
     """Searches last 1000 comments in subreddit for requests, replies, then sleeps for seconds_of_sleep seconds
     """
-    print("Searching last 1,000 comments...")
+    print("SEARCH: Searching last 1,000 comments...")
 
     for comment in reddit.subreddit("testingground4bots").comments(limit=1000):
         if is_request(comment.body) and not has_been_replied_to(str(comment.id)):
@@ -37,7 +37,7 @@ def search_and_reply(reddit, seconds_of_sleep):
             if isinstance(reqs, list):
                 tmp = list()
                 for i in reqs:
-                    print('Request for "' + i.strip() + '" received!')
+                    print('SEARCH: Request for "' + i.strip() + '" received!')
                     tmp.append(format_to_comment(dbm.get_entry(i)))
                     # add separator between every request found except last one
                     if i != reqs[len(reqs) - 1]:
@@ -54,15 +54,15 @@ def search_and_reply(reddit, seconds_of_sleep):
                     ind += 1
 
             else:
-                print('Request for "' + reqs.strip() + '" received!')
+                print('SEARCH: Request for "' + reqs.strip() + '" received!')
                 res = format_to_comment(dbm.get_entry(reqs))
                 res += "\n" + comment_help()
 
             comment.reply(res)
-            print("Replied to comment " + comment.id)
+            print("SYSTEM: Replied to comment " + comment.id)
 
-    print("Search Completed.")
-    print("Sleeping for " + str(seconds_of_sleep) + " seconds...")
+    print("SEARCH: Search Completed.")
+    print("SYSTEM: Sleeping for " + str(seconds_of_sleep) + " seconds...")
     time.sleep(seconds_of_sleep)
 
 
@@ -88,16 +88,18 @@ def update_db(update_time):
     """Updates entry database
     """
     try:
-        print("Updating the database... (last update: " + str(update_time) + ")")
+        print(
+            "UPDATE: Updating the database... (last update: " + str(update_time) + ")"
+        )
         wp.parse_enemies()
         wp.parse_guns()
         wp.parse_items()
-        print("Update completed!")
+        print("UPDATE: Update completed!")
         global last_update
         last_update = datetime.datetime.now()
     except:
         print(
-            "Something went wrong while trying to update the database. Update will be skipped."
+            "!!! WARNING!!! UPDATE: Something went wrong while trying to update the database. Update will be skipped."
         )
 
 
@@ -111,4 +113,4 @@ while True:
     if (datetime.datetime.now() - last_update).days >= 7:
         update_db(last_update)
     else:
-        print("Skipping update. (last update: " + str(last_update))
+        print("SYSTEM: Skipping update. (last update: " + str(last_update))
