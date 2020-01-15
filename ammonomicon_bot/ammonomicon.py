@@ -113,4 +113,4 @@ while True:
     if (datetime.datetime.now() - last_update).days >= 7:
         update_db(last_update)
     else:
-        print("SYSTEM: Skipping update. (last update: " + str(last_update))
+        print("SYSTEM: Skipping update. (last update: " + str(last_update) + ")")

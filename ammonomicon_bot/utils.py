@@ -76,7 +76,7 @@ def format_to_comment(entry):
             + md.bold("Type:")
             + " "
             + entry["Type"]
-            + "\n"
+            + "\n\n"
         )
         # 4th block: Characteristics
         elements = [
@@ -137,14 +137,12 @@ def comment_help():
         + "\n"
         + md.hr()
         + "\n"
-        + md.superscript(
-            md.link("FAQ", FAQ_URL)
-            + " | "
-            + md.link("Mistake?", MISTAKE_URL)
-            + " | "
-            + md.link("Github", GITHUB_URL)
-            + " | "
-            + md.link("Support me", SUPPORT_ME_URL)
-        )
+        + md.link(md.superscript("FAQ"), FAQ_URL)
+        + " ^| "
+        + md.link(md.superscript("Mistake?"), MISTAKE_URL)
+        + " ^| "
+        + md.link(md.superscript("Github"), GITHUB_URL)
+        + " ^| "
+        + md.link(md.superscript("Support me"), SUPPORT_ME_URL)
     )
 
