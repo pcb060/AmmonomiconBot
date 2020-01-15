@@ -30,7 +30,7 @@ def search_and_reply(reddit, seconds_of_sleep):
     """
     print("SEARCH: Searching last 1,000 comments...")
 
-    for comment in reddit.subreddit("testingground4bots").comments(limit=1000):
+    for comment in reddit.subreddit("EnterTheGungeon").comments(limit=1000):
         if is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
 
