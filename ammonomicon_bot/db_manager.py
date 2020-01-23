@@ -35,7 +35,14 @@ def upsert_gun(parsed_entry):
         "Icon": parsed_entry[0].find("img")["src"],
         "Name": parsed_entry[1].get_text().replace("\n", ""),
         "Quote": parsed_entry[2].get_text().replace("\n", ""),
-        "Quality": parsed_entry[3].find("img")["alt"].replace(" Quality Item.png", ""),
+        "Quality": (
+            parsed_entry[3]
+            .find("img")["alt"]
+            .replace(" Quality Item.png", "")
+            .replace("1", "")
+            if parsed_entry[3].find("img")["alt"].startswith("1")
+            else parsed_entry[3].find("img")["alt"].replace(" Quality Item.png", "")
+        ),
         "Type": parsed_entry[4].get_text().replace("\n", ""),
         "Magazine Size": check_if_infinite(parsed_entry[5]),
         "Ammo Capacity": check_if_infinite(parsed_entry[6]),
