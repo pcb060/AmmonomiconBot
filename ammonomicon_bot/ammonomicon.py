@@ -103,16 +103,16 @@ def update_db(update_time):
         )
 
 
+seconds_of_sleep = int(os.environ["seconds_of_sleep"])
+days_between_db_updates = int(os.environ["days_between_db_updates"])
 reddit = bot_login()
 last_update = datetime.datetime(1900, 1, 1)
 update_db(last_update)
 
 while True:
-    search_and_reply(reddit, os.environ["seconds_of_sleep"])
+    search_and_reply(reddit, seconds_of_sleep)
     # updates entry database if a week has passed since last update
-    if (datetime.datetime.now() - last_update).days >= os.environ[
-        "days_between_db_updates"
-    ]:
+    if (datetime.datetime.now() - last_update).days >= days_between_db_updates:
         update_db(last_update)
     else:
         print("SYSTEM: Skipping update. (last update: " + str(last_update) + ")")
