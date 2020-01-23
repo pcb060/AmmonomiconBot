@@ -108,9 +108,11 @@ last_update = datetime.datetime(1900, 1, 1)
 update_db(last_update)
 
 while True:
-    search_and_reply(reddit, 10)
+    search_and_reply(reddit, os.environ["seconds_of_sleep"])
     # updates entry database if a week has passed since last update
-    if (datetime.datetime.now() - last_update).days >= 7:
+    if (datetime.datetime.now() - last_update).days >= os.environ[
+        "days_between_db_updates"
+    ]:
         update_db(last_update)
     else:
         print("SYSTEM: Skipping update. (last update: " + str(last_update) + ")")
