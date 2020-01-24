@@ -39,7 +39,7 @@ def upsert_gun(parsed_entry):
             parsed_entry[3]
             .find("img")["alt"]
             .replace(" Quality Item.png", "")
-            .replace("1", "")
+            .replace("1S", "S")
             if parsed_entry[3].find("img")["alt"].startswith("1")
             else parsed_entry[3].find("img")["alt"].replace(" Quality Item.png", "")
         ),
