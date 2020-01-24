@@ -34,15 +34,17 @@ def check_if_multiple_qualities(parsed_cell):
                 qlt += ", "
             qlt = (
                 qlt + item["alt"].replace(" Quality Item.png", "").replace("1S", "S")
-                if item["alt"].startswith("1")
+                if item["alt"].startswith("1S")
                 else qlt + item["alt"].replace(" Quality Item.png", "")
             )
             counter += 1
     else:
         qlt = (
-            str(parsed_cell.find("img")["alt"]).replace(" Quality Item.png", "")
-            if item["alt"].startswith("1")
-            else item["alt"].replace(" Quality Item.png", "")
+            str(parsed_cell.find("img")["alt"])
+            .replace(" Quality Item.png", "")
+            .replace("1S", "S")
+            if str(parsed_cell.find("img")["alt"]).startswith("1S")
+            else str(parsed_cell.find("img")["alt"]).replace(" Quality Item.png", "")
         )
     return qlt
 
