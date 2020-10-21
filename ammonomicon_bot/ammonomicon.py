@@ -2,11 +2,12 @@
 import praw
 import wiki_parser as wp
 import db_manager as dbm
+from dotenv import load_dotenv
 from utils import format_to_comment, comment_help
 import time
 import os
 import re
-import datetime
+from datetime import datetime
 
 
 def bot_login():
@@ -14,11 +15,11 @@ def bot_login():
     """
     print("SYSTEM: Logging in...")
     reddit = praw.Reddit(
-        client_id=os.environ["client_id"],
-        client_secret=os.environ["client_secret"],
-        password=os.environ["password"],
-        user_agent=os.environ["user_agent"],
-        username=os.environ["username"],
+        client_id=os.getenv("client_id"),
+        client_secret=os.getenv("client_secret"),
+        password=os.getenv("password"),
+        user_agent=os.getenv("user_agent"),
+        username=os.getenv("username"),
     )
     print("SYSTEM: Logged in!")
 
@@ -84,35 +85,59 @@ def has_been_replied_to(request_id):
     return False
 
 
+def get_last_update():
+    try:
+        timefile = open("updatetime.txt", "r")
+        # %Y-%m-%d %H:%M:%S.%f
+        t = timefile.readline()
+        if t != "":
+            return datetime.strptime(t, "%Y-%m-%d %H:%M:%S.%f")
+        else:
+             return datetime(1900, 1, 1)
+    except:
+        print(
+            "!!! WARNING!!! UPDATE: Something went wrong while trying to get the last update time."
+        )
+
+
+def set_last_update(time):
+    try:
+        timefile = open("updatetime.txt", "w")
+        timefile.write(str(time))
+    except:
+        print(
+            "!!! WARNING!!! UPDATE: Something went wrong while trying to set the last update time."
+        )
+
+
 def update_db(update_time):
     """Updates entry database
     """
     try:
         print(
-            "UPDATE: Updating the database... (last update: " + str(update_time) + ")"
+            "UPDATE: Updating the database... (last update: " +
+            str(update_time) + ")"
         )
         wp.parse_enemies()
         wp.parse_guns()
         wp.parse_items()
         print("UPDATE: Update completed!")
-        global last_update
-        last_update = datetime.datetime.now()
+        set_last_update(datetime.now())
     except:
         print(
             "!!! WARNING!!! UPDATE: Something went wrong while trying to update the database. Update will be skipped."
         )
 
 
-seconds_of_sleep = int(os.environ["seconds_of_sleep"])
-days_between_db_updates = int(os.environ["days_between_db_updates"])
+load_dotenv()
+seconds_of_sleep = int(os.getenv("seconds_of_sleep"))
+days_between_db_updates = int(os.getenv("days_between_db_updates"))
 reddit = bot_login()
-last_update = datetime.datetime(1900, 1, 1)
-update_db(last_update)
 
 while True:
-    search_and_reply(reddit, seconds_of_sleep)
     # updates entry database if a week has passed since last update
-    if (datetime.datetime.now() - last_update).days >= days_between_db_updates:
-        update_db(last_update)
+    if (datetime.now() - get_last_update()).days >= days_between_db_updates:
+        update_db(get_last_update())
     else:
-        print("SYSTEM: Skipping update. (last update: " + str(last_update) + ")")
+        print("SYSTEM: Skipping update. (last update: " + str(get_last_update()) + ")")
+    search_and_reply(reddit, seconds_of_sleep)
