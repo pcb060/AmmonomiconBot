@@ -26,8 +26,8 @@ def bot_login():
     return reddit
 
 
-def search_and_reply(reddit, seconds_of_sleep):
-    """Searches last 1000 comments in subreddit for requests, replies, then sleeps for seconds_of_sleep seconds
+def search_and_reply(reddit):
+    """Searches last 1000 comments in subreddit for requests and replies
     """
     print("SEARCH: Searching last 1,000 comments...")
 
@@ -61,10 +61,7 @@ def search_and_reply(reddit, seconds_of_sleep):
 
             comment.reply(res)
             print("SYSTEM: Replied to comment " + comment.id)
-
     print("SEARCH: Search Completed.")
-    print("SYSTEM: Sleeping for " + str(seconds_of_sleep) + " seconds...")
-    time.sleep(seconds_of_sleep)
 
 
 def is_request(text):
@@ -130,14 +127,12 @@ def update_db(update_time):
 
 
 load_dotenv()
-seconds_of_sleep = int(os.getenv("seconds_of_sleep"))
 days_between_db_updates = int(os.getenv("days_between_db_updates"))
 reddit = bot_login()
 
-while True:
-    # updates entry database if a week has passed since last update
-    if (datetime.now() - get_last_update()).days >= days_between_db_updates:
-        update_db(get_last_update())
-    else:
-        print("SYSTEM: Skipping update. (last update: " + str(get_last_update()) + ")")
-    search_and_reply(reddit, seconds_of_sleep)
+# updates entry database if a week has passed since last update
+if (datetime.now() - get_last_update()).days >= days_between_db_updates:
+    update_db(get_last_update())
+else:
+    print("SYSTEM: Skipping update. (last update: " + str(get_last_update()) + ")")
+search_and_reply(reddit)
