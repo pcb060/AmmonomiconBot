@@ -4,6 +4,7 @@ import wiki_parser as wp
 import db_manager as dbm
 from dotenv import load_dotenv
 from utils import format_to_comment, comment_help
+import json
 import time
 import os
 import re
@@ -83,9 +84,10 @@ def has_been_replied_to(request_id):
 
 
 def get_last_update():
+    """Retrieve last datetime written to updatetime.txt
+    """
     try:
         timefile = open("updatetime.txt", "r")
-        # %Y-%m-%d %H:%M:%S.%f
         t = timefile.readline()
         if t != "":
             return datetime.strptime(t, "%Y-%m-%d %H:%M:%S.%f")
@@ -98,6 +100,8 @@ def get_last_update():
 
 
 def set_last_update(time):
+    """Write datetime to updatetime.txt
+    """
     try:
         timefile = open("updatetime.txt", "w")
         timefile.write(str(time))
@@ -107,13 +111,26 @@ def set_last_update(time):
         )
 
 
-def update_db(update_time):
+def reset_db():
+    """Resets db.json in order to remove outdated/redundant entries
+    """
+    try:
+        print("SYSTEM: Resetting database...")
+        empty_json = {'_default' : {}}
+        dbfile = open("ammonomicon_bot/dbs/db.json", "w")
+        json.dump(empty_json, dbfile)
+    except:
+        print(
+            "!!! WARNING!!! SYSTEM: Something went wrong while trying to reset the database"
+        )
+
+def update_db():
     """Updates entry database
     """
     try:
         print(
             "UPDATE: Updating the database... (last update: " +
-            str(update_time) + ")"
+            str(get_last_update()) + ")"
         )
         wp.parse_enemies()
         wp.parse_guns()
@@ -132,7 +149,8 @@ reddit = bot_login()
 
 # updates entry database if a week has passed since last update
 if (datetime.now() - get_last_update()).days >= days_between_db_updates:
-    update_db(get_last_update())
+    reset_db()
+    update_db()
 else:
     print("SYSTEM: Skipping update. (last update: " + str(get_last_update()) + ")")
 search_and_reply(reddit)
